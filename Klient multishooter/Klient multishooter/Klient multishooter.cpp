@@ -29,6 +29,7 @@ struct Player
     double xShootSpeed;
     double yShootSpeed;
     bool allive = false;
+    bool wasHit = false;
 };
 
 
@@ -102,6 +103,14 @@ unsigned __stdcall ReciverFromServer(void* data)
             si->enemies[sock].allive =true;
             si->enemies[sock].x = x;
             si->enemies[sock].y = y;
+        }
+        else if (buf[0] == 'H' && buf[1] == 'H')
+        {
+            if (buf[2])si->P1->wasHit = true;
+        }
+        else if (buf[0] == 'C' && buf[1] == 'C')
+        {
+            if (buf[2])si->P1->wasHit = true;
         }
 
 
@@ -218,7 +227,8 @@ void DrawMostForward(Color colors, SDL_Surface** screen, Player* P1, Player* ene
         {
             DrawRectangle(*screen, bullet.x, bullet.y, 5, 5, colors.green, colors.red,'B');
         }
-    DrawRectangle(*screen, P1->x, P1->y, 20, 20, colors.red, colors.blue,'P');
+        int playerColor = (P1->wasHit) ? colors.green : colors.blue;
+    DrawRectangle(*screen, P1->x, P1->y, 20, 20, colors.red, playerColor,'P');
     //            "template for the second project, elapsed time = %.1lf s  %.0lf frames / s"
 
 };
@@ -285,7 +295,7 @@ int main(int argc, char** argv)
     memset((void*)(&sa), 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_port = htons(8888);
-    sa.sin_addr.s_addr = inet_addr("127.0.0.1");
+    sa.sin_addr.s_addr = inet_addr("192.168.0.103");
 
     int result;
     result = connect(server_socket, (struct sockaddr FAR*) & sa, sizeof(sa));
@@ -317,6 +327,7 @@ int main(int argc, char** argv)
             SDL_FillRect(screen, NULL, colors.black);
             DrawMostForward(colors, &screen, &P1, enemies);
             ReleaseMutex(myMtx);
+            P1.wasHit = false;
             ticks=ticks2= SDL_GetTicks();
         }
         else

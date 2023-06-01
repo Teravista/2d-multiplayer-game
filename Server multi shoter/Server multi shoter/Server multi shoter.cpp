@@ -3,6 +3,9 @@
 #include <process.h>
 #include <time.h>
 #include <list>
+
+#define PLAYER_WIDTH 20
+#define PLAYER_HEIGHT 20
 struct Player
 {
     double x=200, xBorderMovement;
@@ -34,6 +37,24 @@ void PlayerInitializer(Player* players)
     players->ySpeed = 0;
     players->xBorderMovement = 0;
     players->yBorderMovement = 0;
+}
+
+bool DetectColission(Player P1, Player P2) {
+    if (P1.x + PLAYER_WIDTH  >= P2.x && P1.x - PLAYER_WIDTH <= P2.x
+        && P1.y + PLAYER_HEIGHT  >= P2.y && P1.y - PLAYER_HEIGHT  <= P2.y)
+        return true;
+    return false;
+}
+
+bool BulletColision(Player player, std::list<Bullets> bullets) {
+
+   if (bullets.empty()) return false;
+   for(const auto& iter:bullets) {
+        if (player.x + PLAYER_WIDTH/2 >= iter.x && player.x - PLAYER_WIDTH/2 <= iter.x
+            && player.y + PLAYER_HEIGHT/2 >= iter.y && player.y - PLAYER_HEIGHT/2 <= iter.y)
+            return true;
+    }
+    return false;
 }
 
 unsigned __stdcall TickHandler(void* data)
@@ -106,7 +127,19 @@ unsigned __stdcall TickHandler(void* data)
                         send(socketos[i], buf, buff_length, 0);
                     }
                 }
-                
+                for (int v = 0; v < socketCounter; v++) {
+                        if (v != i) {
+                            buf[0] = buf[1] = 'H';
+                            buf[2] = DetectColission(P[i], P[v]);
+                            buff_length = 3;
+                            send(socketos[i], buf, buff_length, 0);
+                    }
+                }
+
+                buf[0] = buf[1] = 'C';
+                buf[2] = BulletColision(P[i], bullets);
+                buff_length = 3;
+                send(socketos[i], buf, buff_length, 0);
                 
             }
 
@@ -170,7 +203,7 @@ int main()
     memset((void*)(&sa), 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_port = htons(8888);
-    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    sa.sin_addr.s_addr = INADDR_ANY;
 
 
     result = bind(s, (struct sockaddr FAR*) & sa, sizeof(sa));
