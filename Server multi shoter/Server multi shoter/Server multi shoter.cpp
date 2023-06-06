@@ -8,13 +8,14 @@
 #define PLAYER_HEIGHT 20
 struct Player
 {
-    double x=200, xBorderMovement;
-    double y=200, yBorderMovement;
-    double ySpeed;
-    double xSpeed;
-    int currentEnemies;
-    double xShootSpeed;
-    double yShootSpeed;
+    double x = 200;
+    double y = 200;
+    double ySpeed = 0;
+    double xSpeed = 0;
+    double xShootSpeed = 0;
+    double yShootSpeed = 0;
+    bool allive = false;
+    bool wasHit = false;
 };
 
 struct Bullets
@@ -26,18 +27,6 @@ int socketCounter = 0;
 SOCKET socketos[10];
 Player P[10];
 std::list<Bullets> bullets;
-
-void PlayerInitializer(Player* players)
-{
-    players->x = 200;
-    players->y = 200;
-    players->xShootSpeed = 0;
-    players->yShootSpeed = 0;
-    players->xSpeed = 0;
-    players->ySpeed = 0;
-    players->xBorderMovement = 0;
-    players->yBorderMovement = 0;
-}
 
 bool DetectColission(Player P1, Player P2) {
     if (P1.x + PLAYER_WIDTH  >= P2.x && P1.x - PLAYER_WIDTH <= P2.x
