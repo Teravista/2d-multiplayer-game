@@ -131,7 +131,6 @@
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="Klient multishooter.cpp" />
     <ClCompile Include="SocketHandler.cpp" />
-    <ClCompile Include="StructStorage.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>

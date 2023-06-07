@@ -94,4 +94,5 @@ int SocketHandler::SocketInitializer()
 void SocketHandler::SocketClose()
 {
     closesocket(server_socket);
+    WSACleanup();
 }

@@ -1,12 +1,1 @@
-﻿  KeyboardHandler.cpp
-  Klient multishooter.cpp
-  SocketHandler.cpp
-  WindowHandler.cpp
-C:\A Chudy Folder\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(100,59): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\A Chudy Folder\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(100,45): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\A Chudy Folder\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(105,47): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\A Chudy Folder\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(105,37): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\A Chudy Folder\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(108,36): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\A Chudy Folder\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(108,29): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-  Generating Code...
-  Klient multishooter.vcxproj -> C:\A Chudy Folder\The_Multi_Player_Game\Klient multishooter\x64\Debug\Klient multishooter.exe
+﻿  Klient multishooter.vcxproj -> C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\x64\Debug\Klient multishooter.exe

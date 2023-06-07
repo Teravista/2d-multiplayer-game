@@ -21,9 +21,6 @@
     <ClCompile Include="WindowHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StructStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SocketHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

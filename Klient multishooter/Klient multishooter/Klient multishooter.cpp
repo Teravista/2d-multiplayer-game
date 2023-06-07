@@ -16,8 +16,10 @@
 //3.improve movement handler seems junky
 //4.change method of comunication with server to bits : be smart use less data
 //5.use UDP instead of TCP for some non important data like current player location (we can skip a few frames)
-//6.implement some kind of popup to choose manual ipadrres to connect to server or local host
+//----->> 6.implement some kind of popup to choose manual ipadrres to connect to server or local host
 //7.implement some kind of time out mechanizm for players who disconet to automaticly dissapear from map
+//8.remove bullets to draw from main move it to SFL drawer and there create copy
+//9. add mutex to adding/drawing bullets
 
 int main(int argc, char** argv) 
 {
@@ -58,7 +60,6 @@ int main(int argc, char** argv)
     th1.detach();
     windowHandler.FreeSurfaces();
     socketHandler.SocketClose();
-    WSACleanup();
     return 0;
 }
 

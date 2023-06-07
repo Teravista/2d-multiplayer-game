@@ -128,7 +128,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConnectionHandler.cpp" />
+    <ClCompile Include="GameplayController.cpp" />
     <ClCompile Include="Server multi shoter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ConnectionHandler.h" />
+    <ClInclude Include="GameplayController.h" />
+    <ClInclude Include="StructStorage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
