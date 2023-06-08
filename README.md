@@ -1,4 +1,4 @@
 # 2d-multiplayer-game 
-As the name suggest its 2d multiplayer game with client and server side included. 
-Grapgics are done using SDL library which is included in this repo.
-To Connect server and clients side only socket connection and messeges without any high level library.
+As the name suggest, it's 2d multiplayer game with client and server side included. 
+Graphics are done using SDL library which is included in this repo.
+To connect server and clients side only socket connection and messages without any high level library.
