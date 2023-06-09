@@ -7,8 +7,9 @@
 #define PLAYER_WIDTH 20
 #define PLAYER_HEIGHT 20
 
-GameplayController::GameplayController(ConnectionHandler* connectionHandler)
+GameplayController::GameplayController(ConnectionHandler* connectionHandler, std::mutex* bulletMtx)
 {
+    this->bulletMtx = bulletMtx;
     this->myConnectionH = connectionHandler;
 }
 
@@ -30,8 +31,9 @@ bool GameplayController::BulletColision(Player player, std::list<Bullets> bullet
     return false;
 }
 
-void GameplayController::GameStatePropagator(std::list<Bullets>* bullets,Player* P)
+void GameplayController::GameStatePropagator(std::list<Bullets>* newBullets,Player* P)
 {
+    std::list<Bullets> allBullets;
     char buf[100];
     buf[0] = '0';
     int buff_length;
@@ -40,16 +42,16 @@ void GameplayController::GameStatePropagator(std::list<Bullets>* bullets,Player*
     {
         if ((double)(clock() - t) / CLOCKS_PER_SEC > 0.02)
         {
-            std::list<Bullets>::iterator iter = bullets->begin();
-            std::list<Bullets>::iterator end = bullets->end();
-            while (iter != end)
+            std::list<Bullets>::iterator bulletIterator = allBullets.begin();
+            std::list<Bullets>::iterator bulletLast = allBullets.end();
+            while (bulletIterator != bulletLast)
             {
-                iter->x += iter->xSpeed * 5;
-                iter->y += iter->ySpeed * 5;
-                if (iter->x < 30 || iter->x>500 - 50 || iter->y < 30 || iter->y>400 - 50)
-                    iter = bullets->erase(iter);
+                bulletIterator->x += bulletIterator->xSpeed * 5;
+                bulletIterator->y += bulletIterator->ySpeed * 5;
+                if (bulletIterator->x < 30 || bulletIterator->x>500 - 50 || bulletIterator->y < 30 || bulletIterator->y>400 - 50)
+                    bulletIterator = allBullets.erase(bulletIterator);
                 else
-                    ++iter;
+                    ++bulletIterator;
             }
             for (int i = 0; i < this->myConnectionH->socketCounter; i++)
             {
@@ -68,9 +70,13 @@ void GameplayController::GameStatePropagator(std::list<Bullets>* bullets,Player*
                 buf[7] = int(P[i].y / 10) % 10;
                 buf[8] = (int(P[i].y) % 100) % 10;
                 buf[9] = '\0';
-                this->myConnectionH->SendToClient(i,buf,10);
-                for (Bullets bullet : *bullets)
+                this->myConnectionH->SendToClient(i,buf,12);
+
+                bulletIterator = newBullets->begin();
+                bulletLast = newBullets->end();
+                while (bulletIterator != bulletLast)
                 {
+                    Bullets bullet = Bullets(*bulletIterator);
                     buf[0] = buf[1] = 'B';
                     buf[3] = int(bullet.x / 100);
                     buf[4] = int(bullet.x / 10) % 10;
@@ -78,9 +84,12 @@ void GameplayController::GameStatePropagator(std::list<Bullets>* bullets,Player*
                     buf[6] = int(bullet.y / 100);
                     buf[7] = int(bullet.y / 10) % 10;
                     buf[8] = (int(bullet.y) % 100) % 10;
-                    buf[9] = '\0';
-                    this->myConnectionH->SendToClient(i, buf, 10);
-
+                    buf[9] = int(bullet.xSpeed);
+                    buf[10] = int(bullet.ySpeed);
+                    buf[11] = '\0';
+                    allBullets.push_front(bullet);
+                    this->myConnectionH->SendToClient(i, buf, 12);
+                    ++bulletIterator    ;
                 }
                 for (int v = 0; v < this->myConnectionH->socketCounter; v++)
                 {
@@ -95,7 +104,7 @@ void GameplayController::GameStatePropagator(std::list<Bullets>* bullets,Player*
                         buf[7] = int(P[v].y / 10) % 10;
                         buf[8] = (int(P[v].y) % 100) % 10;
                         buf[9] = '\0';
-                        this->myConnectionH->SendToClient(i, buf, 10);
+                        this->myConnectionH->SendToClient(i, buf, 12);
                     }
                 }
                 for (int v = 0; v < this->myConnectionH->socketCounter; v++) {
@@ -107,11 +116,13 @@ void GameplayController::GameStatePropagator(std::list<Bullets>* bullets,Player*
                 }
 
                 buf[0] = buf[1] = 'C';
-                buf[2] = BulletColision(P[i], *bullets);
+                buf[2] = BulletColision(P[i], allBullets);
                 this->myConnectionH->SendToClient(i, buf, 3);
 
             }
-
+            this->bulletMtx->lock();
+            newBullets->clear();
+            this->bulletMtx->unlock();
             t = clock();
         }
     }

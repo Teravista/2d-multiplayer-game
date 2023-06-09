@@ -20,7 +20,10 @@ struct Player
 
 struct Bullets
 {
-    double x, y;
+    double x = 0;
+    double y = 0;
+    double xSpeed = 0;
+    double ySpeed = 0;
 };
 
 struct Player_Socket {
