@@ -7,7 +7,7 @@ struct Player
     double xSpeed = 0;
     double xShootSpeed = 0;
     double yShootSpeed = 0;
-    bool allive = false;
+    bool lifes = 3;
     bool wasHit = false;
 };
 

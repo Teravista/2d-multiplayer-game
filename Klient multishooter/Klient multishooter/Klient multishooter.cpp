@@ -18,8 +18,7 @@
 // QUALITY AND IMPROVEMENT::
 //3.improve movement handler seems junky
 //4.change method of comunication with server to bits : be smart use less data
-// //10. move storing player info in client and server from simple arrays to more advanced and flexible collections
-
+//10. move storing player info in client and server from simple arrays to more advanced and flexible collections
 // CONNECTION
 //5.use UDP instead of TCP for some non important data like current player location (we can skip a few frames)
 //7.implement some kind of time out mechanizm for players who disconet to automaticly dissapear from map

@@ -63,7 +63,7 @@ void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerI
             y = buf[6] * 100;
             y += buf[7] * 10;
             y += buf[8];
-            enemies[sock].allive = true;
+            enemies[sock].lifes = 3;
             enemies[sock].x = x;
             enemies[sock].y = y;
         }

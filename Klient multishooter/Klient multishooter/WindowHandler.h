@@ -24,6 +24,7 @@ private:
 	void DrawSurface(SDL_Surface* screen, SDL_Surface* sprite, int x, int y);
 	void DrawRectangle(SDL_Surface* screen, int x, int y, int l, int k,Uint32 outlineColor, Uint32 fillColor);
 	void DrawString(SDL_Surface* screen, double x, double y, std::string text, SDL_Surface* charset);
+	void DrawLifes(Player* P1);
 	void DrawEntities(Player* P1, Player* enemies, std::list<struct Bullets> bullets);
 	void DrawSpinningLogo(double i);
 	void RefreshWindow();

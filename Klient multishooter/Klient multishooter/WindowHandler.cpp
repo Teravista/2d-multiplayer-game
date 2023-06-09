@@ -125,13 +125,23 @@ void WindowHandler::DrawRectangle(SDL_Surface* screen, int x, int y, int l, int 
         DrawLine(screen, x + 1, i, l - 2, 1, 0, fillColor);
 };
 
+void WindowHandler::DrawLifes(Player* P1)
+{
+    for (int i = 0; i < P1->lifes; i++)
+    {
+        DrawRectangle(screen, SCREEN_WIDTH - 40 - i * 50, 40, 10, 10, myColors.red, myColors.red);
+        DrawRectangle(screen, SCREEN_WIDTH - 50 - i * 50, 50, 10, 10, myColors.red, myColors.red);
+        DrawRectangle(screen, SCREEN_WIDTH - 60 - i * 50, 40, 10, 10, myColors.red, myColors.red);
+    }
+}
+
 void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets> bullets)//TODO optimazations kinda junky
 {
     // drawing player enemies and bullets
     //
     for (int i = 0; i < 10; i++)
     {
-        if (enemies[i].allive == true)
+        if (enemies[i].lifes > 0)
         {
             DrawRectangle(screen, enemies[i].x, enemies[i].y, 20, 20, myColors.blue, myColors.red);
         }
@@ -150,6 +160,7 @@ void WindowHandler::TexturesUpdateLVL1(Player* P1, Player* enemies, std::list<Bu
 {
     SDL_FillRect(screen, NULL, myColors.black);
     DrawEntities(P1, enemies, bullets);
+    DrawLifes(P1);
     this->RefreshWindow();
 }
 
