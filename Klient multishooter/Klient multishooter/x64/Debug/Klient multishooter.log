@@ -1,19 +1,19 @@
 ﻿  WindowHandler.cpp
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(94,15): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(95,15): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(130,59): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(130,45): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(135,47): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(135,37): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(138,36): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(138,29): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(152,38): warning C4244: 'argument': conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(154,38): warning C4244: 'argument': conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(155,38): warning C4244: 'argument': conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(168,67): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(168,35): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(169,96): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(169,61): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(170,96): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\Klient multishooter\WindowHandler.cpp(170,35): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-  Klient multishooter.vcxproj -> C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\x64\Debug\Klient multishooter.exe
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(100,15): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(101,15): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(136,59): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(136,45): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(142,47): warning C4244: 'argument': conversion from 'const double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(142,37): warning C4244: 'argument': conversion from 'const double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(146,36): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(146,29): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(160,38): warning C4244: 'argument': conversion from 'unsigned __int64' to 'double', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(162,38): warning C4244: 'argument': conversion from 'unsigned __int64' to 'double', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(163,38): warning C4244: 'argument': conversion from 'unsigned __int64' to 'double', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(176,67): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(176,35): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(177,96): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(177,61): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(178,96): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\Klient multishooter\WindowHandler.cpp(178,35): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  Klient multishooter.vcxproj -> C:\Users\chudy\Documents\2d-multiplayer-game\Klient multishooter\x64\Debug\Klient multishooter.exe

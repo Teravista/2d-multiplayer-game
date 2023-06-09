@@ -4,6 +4,11 @@
 #include <thread>
 #include <list>
 
+ConnectionHandler::ConnectionHandler(std::mutex* bulletMtx)
+{
+    this->bulletMtx = bulletMtx;
+}
+
 int ConnectionHandler::ServerInitialize()
 {
     WSADATA wsas;
@@ -36,7 +41,7 @@ int ConnectionHandler::ServerInitialize()
     return 1;
 }
 
-void ConnectionHandler::ClientMessageReciver(SOCKET si, Player* P, std::list<Bullets>* bullets)
+void ConnectionHandler::ClientMessageReciver(SOCKET si, Player* P, std::list<Bullets>* newBullets)
 {
     char buf[100];
     int cur_player = socketCounter - 1;
@@ -69,7 +74,9 @@ void ConnectionHandler::ClientMessageReciver(SOCKET si, Player* P, std::list<Bul
                 bullet.xSpeed = +1;
             bullet.x += bullet.xSpeed * 30;
             bullet.y += bullet.ySpeed * 30;
-            bullets->push_back(bullet);
+            this->bulletMtx->lock();
+            newBullets->push_back(bullet);
+            this->bulletMtx->unlock();
         }
     };
 }
@@ -79,7 +86,7 @@ void ConnectionHandler::SendToClient(int ithSocket, char* buf, int buff_length)
     send(socketos[ithSocket], buf, buff_length, 0);
 }
 
-void ConnectionHandler::AcceptNewClient(Player* players, std::list<Bullets>* bullets)
+void ConnectionHandler::AcceptNewClient(Player* players, std::list<Bullets>* newBullets)
 {
     SOCKET cleintSocket;
     struct sockaddr_in sc;
@@ -88,7 +95,7 @@ void ConnectionHandler::AcceptNewClient(Player* players, std::list<Bullets>* bul
     socketos[socketCounter] = cleintSocket;
     socketCounter++;
     printf("Client Connected: %i\n", socketCounter);
-    std::thread th1(&ConnectionHandler::ClientMessageReciver,this, cleintSocket, players,bullets);
+    std::thread th1(&ConnectionHandler::ClientMessageReciver,this, cleintSocket, players, newBullets);
     th1.detach();
 }
 

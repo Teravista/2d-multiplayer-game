@@ -6,11 +6,17 @@
 #include <list>
 #include <string>
 
-void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerID, std::list<Bullets>* bullets, std::list<Bullets>* bulletsToDraw)
+SocketHandler::SocketHandler(std::mutex* bulletMtx)
+{
+    this->bulletMtx = bulletMtx;
+}
+
+
+void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerID, std::list<Bullets>* bullets)
 {
     char buf[100];
     printf("got in\n");
-    while (recv(server_socket, buf, 10, 0) > 0)
+    while (recv(server_socket, buf, 12, 0) > 0)
     {
         int x = 0;
         int y = 0;
@@ -30,9 +36,6 @@ void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerI
             P1->x = x;
             P1->y = y;
             *playerID = buf[2];
-            std::list<Bullets> bulletsToDraww(*bullets);
-            *bulletsToDraw = bulletsToDraww;
-            bullets->clear();
         }
         else if (buf[0] == 'B' && buf[1] == 'B')
         {
@@ -45,7 +48,11 @@ void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerI
             Bullets bullet;
             bullet.x = x;
             bullet.y = y;
+            bullet.xSpeed = buf[9];
+            bullet.ySpeed = buf[10];
+            this->bulletMtx->lock();
             bullets->push_back(bullet);
+            this->bulletMtx->unlock();
         }
         else if (buf[0] == 'E' && buf[1] == 'E')
         {

@@ -14,6 +14,11 @@ struct WindowHandler::Colors
     int black;
 }myColors;
 
+WindowHandler::WindowHandler(std::mutex* bulletMtx)
+{
+    this->bulletMtx = bulletMtx;
+}
+
 int WindowHandler::SDL_Initialize()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -79,6 +84,7 @@ void WindowHandler::DrawLine(SDL_Surface* screen, int x, int y, int l, int dx, i
 
 void WindowHandler::DrawString(SDL_Surface* screen, double x, double y, std::string textString, SDL_Surface* charset) {
     const char* text = textString.c_str();
+    //TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);
     int px, py, c;
     SDL_Rect s, d;
     s.w = 8;
@@ -119,7 +125,7 @@ void WindowHandler::DrawRectangle(SDL_Surface* screen, int x, int y, int l, int 
         DrawLine(screen, x + 1, i, l - 2, 1, 0, fillColor);
 };
 
-void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets> bulletsToDraw)//TODO optimazations kinda junky
+void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets> bullets)//TODO optimazations kinda junky
 {
     // drawing player enemies and bullets
     //
@@ -130,27 +136,29 @@ void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets>
             DrawRectangle(screen, enemies[i].x, enemies[i].y, 20, 20, myColors.blue, myColors.red);
         }
     }
-    for (auto bullet : bulletsToDraw)
+    this->bulletMtx->lock();
+    for (const Bullets& bullet : bullets)
     {
         DrawRectangle(screen, bullet.x, bullet.y, 5, 5, myColors.green, myColors.red);
     }
+    this->bulletMtx->unlock();
     int playerColor = (P1->wasHit) ? myColors.green : myColors.blue;
     DrawRectangle(screen, P1->x, P1->y, 20, 20, myColors.red, playerColor);
 };
 
-void WindowHandler::TexturesUpdateLVL1(Player* P1, Player* enemies, std::list<Bullets> bulletsToDraw)
+void WindowHandler::TexturesUpdateLVL1(Player* P1, Player* enemies, std::list<Bullets> bullets)
 {
     SDL_FillRect(screen, NULL, myColors.black);
-    DrawEntities(P1, enemies, bulletsToDraw);
+    DrawEntities(P1, enemies, bullets);
     this->RefreshWindow();
 }
 
 void WindowHandler::TexturesUpdateLoadScreen(std::string input,int clockTircks)
 {
     SDL_FillRect(screen, NULL, myColors.black);
-    std::string text = "Wpisz IP serwera do ktorego sie pol¹czysz";
+    std::string text = "Type server IP you want connect to";
     DrawString(screen, screen->w / 2 - text.length() * 8 / 2, 26, text, charset);
-    text = "'127.0.0.1' lub wpisz 'local' by po³¹czyæ siê do localhosta";
+    text = "or you can type 'local' to connect to localhost";
     DrawString(screen, screen->w / 2 - text.length() * 8 / 2, 46, text, charset);
     DrawString(screen, screen->w / 2 - input.length() * 8 / 2, 66, input, charset);
     DrawSpinningLogo(clockTircks);
@@ -163,7 +171,7 @@ void WindowHandler::DrawSpinningLogo(double clockTircks)
     // something nice to look at while typing in server sIP
     const int xMiddle = SCREEN_WIDTH/2;
     const int yMiddle = SCREEN_HEIGHT / 2;
-    for (int x = 0; x < 100; x++)
+    for (int x = 0; x < 200; x++)
     {
         DrawPixel(screen, xMiddle +sin(x + i / 2000)*100, yMiddle + cos(x+i/1000) * 100,myColors.red);
         DrawPixel(screen, xMiddle + sin(x + i / 2000) * 100 - cos(x + i / 1000) * 100, yMiddle - cos(x + i / 1000) * 100, myColors.green);
