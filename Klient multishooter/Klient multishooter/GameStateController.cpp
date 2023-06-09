@@ -13,10 +13,9 @@ std::string GameStateController::GameLoadScreen()
 {
     bool pressedEnter = false;
     SDL_Event event;
-    char input[126];
+    std::string input = "";
     double ticks = SDL_GetTicks();
     double ticks2 = SDL_GetTicks();
-    sprintf_s(input, "");
     while (!pressedEnter)
     {
         if (ticks2 - ticks > 16.6)//co oko³o 1 milisekundy 60fps
@@ -30,22 +29,19 @@ std::string GameStateController::GameLoadScreen()
         }
         while (SDL_PollEvent(&event))
         {
-            int length = strlen(input);
             char keyRead = keyboardHandler->InputAdress(event, &pressedEnter);
 
-            if(keyRead == SDLK_BACKSPACE&&length>0)
-                input[length-1] = '\0';
-            else if (keyRead != NULL&&keyRead != SDLK_BACKSPACE)
+            if(keyRead == SDLK_BACKSPACE&&input.length()>0)
+                input.pop_back();
+            else if (keyRead != NULL&& keyRead != SDLK_BACKSPACE)
             {
-                input[length] = keyRead;
-                input[length+1] = '\0';
+                input.push_back(keyRead);
             }
         }
     }
-    if (strcmp(input,"local") == 0)
+    if (input.compare("local") == 0)
     {
-        sprintf_s(input, "127.0.0.1");
-        return std::string(input);
+        return std::string("127.0.0.1");
     }
     return std::string(input);
 }
