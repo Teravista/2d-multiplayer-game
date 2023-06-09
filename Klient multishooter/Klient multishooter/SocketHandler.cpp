@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <thread>
 #include <list>
+#include <string>
 
 void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerID, std::list<Bullets>* bullets, std::list<Bullets>* bulletsToDraw)
 {
@@ -70,7 +71,7 @@ void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerI
     };
 }
 
-int SocketHandler::SocketInitializer()
+int SocketHandler::SocketInitializer(std::string serverIP)
 {
     struct sockaddr_in sa;
     WSADATA wsas;
@@ -81,7 +82,8 @@ int SocketHandler::SocketInitializer()
     memset((void*)(&sa), 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_port = htons(8888);
-    sa.sin_addr.s_addr = inet_addr("127.0.0.1");
+    sa.sin_addr.s_addr = inet_addr(serverIP.c_str());
+    
     int result = connect(server_socket, (struct sockaddr FAR*) & sa, sizeof(sa));
     if (result == SOCKET_ERROR)
     {

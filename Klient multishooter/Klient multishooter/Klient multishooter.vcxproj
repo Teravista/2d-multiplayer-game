@@ -128,12 +128,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameStateController.cpp" />
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="Klient multishooter.cpp" />
     <ClCompile Include="SocketHandler.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameStateController.h" />
     <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="SocketHandler.h" />
     <ClInclude Include="StructStorage.h" />

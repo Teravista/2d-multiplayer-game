@@ -4,6 +4,7 @@
 class KeyboardHandler
 {
 public:
-	void EventHandler(SDL_Event event, Player* P1, SOCKET server_socket, bool* gameState, int playerID);
+	void EventGameHandler(SDL_Event event, Player* P1, SOCKET server_socket, bool* gameState, int playerID);
+	char InputAdress(SDL_Event event, bool* pressedEnter);
 };
 

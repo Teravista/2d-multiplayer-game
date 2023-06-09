@@ -1,5 +1,6 @@
 #include "WindowHandler.h"
 #include "StructStorage.h"
+#include "KeyboardHandler.h"
 #include"./SDL2-2.0.10/include/SDL.h"
 #include <list>
 
@@ -17,30 +18,35 @@ int WindowHandler::SDL_Initialize()
         printf("SDL_Init error: %s\n", SDL_GetError());
         return -1;
     }
-    int rc = SDL_CreateWindowAndRenderer(500, 400, 0,
+    int rc = SDL_CreateWindowAndRenderer(600, 600, 0,
         &window, &renderer);
     if (rc != 0) {
         SDL_Quit();
         printf("SDL_CreateWindowAndRenderer error: %s\n", SDL_GetError());
         return -1;
     };
+    charset = SDL_LoadBMP("./Resources/cs8x8.bmp");
+    if (charset == NULL)
+    {
+        printf("SDL_LoadBMP error: %s\n", SDL_GetError());
+        return -1;
+    }
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    SDL_RenderSetLogicalSize(renderer, 500, 400);
+    SDL_RenderSetLogicalSize(renderer, 600, 600);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_SetWindowTitle(window, "GRA NYYYYYYYYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     //SDL_SetColorKey(images->charset, true, 0x000000);
 
-    screen = SDL_CreateRGBSurface(0, 500, 400, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-    scrtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 500, 400);
+    screen = SDL_CreateRGBSurface(0, 600, 600, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    scrtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 600, 600);
     // wy³¹czenie widocznoœci kursora myszy
     SDL_ShowCursor(SDL_DISABLE);
     GetColors(screen);
     return 1;
 }
-void WindowHandler::TexturesUpdate(Player* P1, Player* enemies, std::list<Bullets> bulletsToDraw)
+
+void WindowHandler::RefreshWindow()
 {
-    SDL_FillRect(screen, NULL, myColors.black);
-    DrawEntities(P1, enemies, bulletsToDraw);
     SDL_UpdateTexture(scrtex, NULL, screen->pixels, screen->pitch);
     SDL_RenderCopy(renderer, scrtex, NULL, NULL);
     SDL_RenderPresent(renderer);
@@ -66,6 +72,27 @@ void WindowHandler::DrawLine(SDL_Surface* screen, int x, int y, int l, int dx, i
         DrawPixel(screen, x, y, color, b);
         x += dx;
         y += dy;
+    };
+};
+
+void DrawString(SDL_Surface* screen, double x, double y, const char* text, SDL_Surface* charset) {
+    int px, py, c;
+    SDL_Rect s, d;
+    s.w = 8;
+    s.h = 8;
+    d.w = 8;
+    d.h = 8;
+    while (*text) {
+        c = *text & 255;
+        px = (c % 16) * 8;
+        py = (c / 16) * 8;
+        s.x = px;
+        s.y = py;
+        d.x = x;
+        d.y = y;
+        SDL_BlitSurface(charset, &s, screen, &d);
+        x += 8;
+        text++;
     };
 };
 
@@ -107,6 +134,37 @@ void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets>
     int playerColor = (P1->wasHit) ? myColors.green : myColors.blue;
     DrawRectangle(screen, P1->x, P1->y, 20, 20, myColors.red, playerColor, 'P');
 };
+
+void WindowHandler::TexturesUpdateLVL1(Player* P1, Player* enemies, std::list<Bullets> bulletsToDraw)
+{
+    SDL_FillRect(screen, NULL, myColors.black);
+    DrawEntities(P1, enemies, bulletsToDraw);
+    this->RefreshWindow();
+}
+
+void WindowHandler::TexturesUpdateLoadScreen(char* input,int i)
+{
+    SDL_FillRect(screen, NULL, myColors.black);
+    char text[128];
+    sprintf_s(text, "Wpisz IP serwera do ktorego sie pol¹czysz");
+    DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 26, text, charset);
+    sprintf_s(text, "'127.0.0.1' lub wpisz 'local' by po³¹czyæ siê do localhosta");
+    DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 46, text, charset);
+    DrawString(screen, screen->w / 2 - strlen(input) * 8 / 2, 66, input, charset);
+    DrawSpinningLogo(i);
+    this->RefreshWindow();
+}
+
+void WindowHandler::DrawSpinningLogo(double i)
+{
+    int center = 300;
+    for (int x = 0; x < 360; x++)
+    {
+        DrawPixel(screen, center +sin(x + i / 2000)*100, center + cos(x+i/1000) * 100,myColors.red, 'b');
+        DrawPixel(screen, center + sin(x + i / 2000) * 100 - cos(x + i / 1000) * 100, center - cos(x + i / 1000) * 100, myColors.green, 'b');
+        DrawPixel(screen, center - cos(x + i / 1000) * 100, center + sin(x + i / 2000) * 100 - cos(x + i / 1000) * 100, myColors.blue, 'b');
+    }
+}
 
 void WindowHandler::GetColors(SDL_Surface* screen)
 {
