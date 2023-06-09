@@ -1,8 +1,11 @@
 #include "WindowHandler.h"
 #include "StructStorage.h"
+#include "KeyboardHandler.h"
 #include"./SDL2-2.0.10/include/SDL.h"
 #include <list>
 
+#define SCREEN_WIDTH 600
+#define SCREEN_HEIGHT 600
 struct WindowHandler::Colors
 {
     int red;
@@ -17,30 +20,35 @@ int WindowHandler::SDL_Initialize()
         printf("SDL_Init error: %s\n", SDL_GetError());
         return -1;
     }
-    int rc = SDL_CreateWindowAndRenderer(500, 400, 0,
+    int rc = SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0,
         &window, &renderer);
     if (rc != 0) {
         SDL_Quit();
         printf("SDL_CreateWindowAndRenderer error: %s\n", SDL_GetError());
         return -1;
     };
+    charset = SDL_LoadBMP("./Resources/cs8x8.bmp");
+    if (charset == NULL)
+    {
+        printf("SDL_LoadBMP error: %s\n", SDL_GetError());
+        return -1;
+    }
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    SDL_RenderSetLogicalSize(renderer, 500, 400);
+    SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_SetWindowTitle(window, "GRA NYYYYYYYYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     //SDL_SetColorKey(images->charset, true, 0x000000);
 
-    screen = SDL_CreateRGBSurface(0, 500, 400, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-    scrtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 500, 400);
+    screen = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    scrtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
     // wy³¹czenie widocznoœci kursora myszy
     SDL_ShowCursor(SDL_DISABLE);
     GetColors(screen);
     return 1;
 }
-void WindowHandler::TexturesUpdate(Player* P1, Player* enemies, std::list<Bullets> bulletsToDraw)
+
+void WindowHandler::RefreshWindow()
 {
-    SDL_FillRect(screen, NULL, myColors.black);
-    DrawEntities(P1, enemies, bulletsToDraw);
     SDL_UpdateTexture(scrtex, NULL, screen->pixels, screen->pitch);
     SDL_RenderCopy(renderer, scrtex, NULL, NULL);
     SDL_RenderPresent(renderer);
@@ -55,17 +63,39 @@ void WindowHandler::FreeSurfaces()
     SDL_Quit();
 };
 
-void WindowHandler::DrawPixel(SDL_Surface* surface, int x, int y, Uint32 color, char b) {
+void WindowHandler::DrawPixel(SDL_Surface* surface, int x, int y, Uint32 color) {
     int bpp = surface->format->BytesPerPixel;
     Uint8* p = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
     *(Uint32*)p = color;
 };
 
-void WindowHandler::DrawLine(SDL_Surface* screen, int x, int y, int l, int dx, int dy, Uint32 color, char b) {
+void WindowHandler::DrawLine(SDL_Surface* screen, int x, int y, int l, int dx, int dy, Uint32 color) {
     for (int i = 0; i < l; i++) {
-        DrawPixel(screen, x, y, color, b);
+        DrawPixel(screen, x, y, color);
         x += dx;
         y += dy;
+    };
+};
+
+void WindowHandler::DrawString(SDL_Surface* screen, double x, double y, std::string textString, SDL_Surface* charset) {
+    const char* text = textString.c_str();
+    int px, py, c;
+    SDL_Rect s, d;
+    s.w = 8;
+    s.h = 8;
+    d.w = 8;
+    d.h = 8;
+    while (*text) {
+        c = *text & 255;
+        px = (c % 16) * 8;
+        py = (c / 16) * 8;
+        s.x = px;
+        s.y = py;
+        d.x = x;
+        d.y = y;
+        SDL_BlitSurface(charset, &s, screen, &d);
+        x += 8;
+        text++;
     };
 };
 
@@ -79,14 +109,14 @@ void WindowHandler::DrawSurface(SDL_Surface* screen, SDL_Surface* sprite, int x,
 };
 
 void WindowHandler::DrawRectangle(SDL_Surface* screen, int x, int y, int l, int k,
-    Uint32 outlineColor, Uint32 fillColor, char b) {
+    Uint32 outlineColor, Uint32 fillColor) {
     int i;
-    DrawLine(screen, x, y, k, 0, 1, outlineColor, b);
-    DrawLine(screen, x + l - 1, y, k, 0, 1, outlineColor, b);
-    DrawLine(screen, x, y, l, 1, 0, outlineColor, b);
-    DrawLine(screen, x, y + k - 1, l, 1, 0, outlineColor, b);
+    DrawLine(screen, x, y, k, 0, 1, outlineColor);
+    DrawLine(screen, x + l - 1, y, k, 0, 1, outlineColor);
+    DrawLine(screen, x, y, l, 1, 0, outlineColor);
+    DrawLine(screen, x, y + k - 1, l, 1, 0, outlineColor);
     for (i = y + 1; i < y + k - 1; i++)
-        DrawLine(screen, x + 1, i, l - 2, 1, 0, fillColor, b);
+        DrawLine(screen, x + 1, i, l - 2, 1, 0, fillColor);
 };
 
 void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets> bulletsToDraw)//TODO optimazations kinda junky
@@ -97,16 +127,49 @@ void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets>
     {
         if (enemies[i].allive == true)
         {
-            DrawRectangle(screen, enemies[i].x, enemies[i].y, 20, 20, myColors.blue, myColors.red, 'E');
+            DrawRectangle(screen, enemies[i].x, enemies[i].y, 20, 20, myColors.blue, myColors.red);
         }
     }
     for (auto bullet : bulletsToDraw)
     {
-        DrawRectangle(screen, bullet.x, bullet.y, 5, 5, myColors.green, myColors.red, 'B');
+        DrawRectangle(screen, bullet.x, bullet.y, 5, 5, myColors.green, myColors.red);
     }
     int playerColor = (P1->wasHit) ? myColors.green : myColors.blue;
-    DrawRectangle(screen, P1->x, P1->y, 20, 20, myColors.red, playerColor, 'P');
+    DrawRectangle(screen, P1->x, P1->y, 20, 20, myColors.red, playerColor);
 };
+
+void WindowHandler::TexturesUpdateLVL1(Player* P1, Player* enemies, std::list<Bullets> bulletsToDraw)
+{
+    SDL_FillRect(screen, NULL, myColors.black);
+    DrawEntities(P1, enemies, bulletsToDraw);
+    this->RefreshWindow();
+}
+
+void WindowHandler::TexturesUpdateLoadScreen(std::string input,int clockTircks)
+{
+    SDL_FillRect(screen, NULL, myColors.black);
+    std::string text = "Wpisz IP serwera do ktorego sie pol¹czysz";
+    DrawString(screen, screen->w / 2 - text.length() * 8 / 2, 26, text, charset);
+    text = "'127.0.0.1' lub wpisz 'local' by po³¹czyæ siê do localhosta";
+    DrawString(screen, screen->w / 2 - text.length() * 8 / 2, 46, text, charset);
+    DrawString(screen, screen->w / 2 - input.length() * 8 / 2, 66, input, charset);
+    DrawSpinningLogo(clockTircks);
+    this->RefreshWindow();
+}
+
+void WindowHandler::DrawSpinningLogo(double clockTircks)
+{
+    double i = clockTircks; //using time to create continously spinning logo
+    // something nice to look at while typing in server sIP
+    const int xMiddle = SCREEN_WIDTH/2;
+    const int yMiddle = SCREEN_HEIGHT / 2;
+    for (int x = 0; x < 100; x++)
+    {
+        DrawPixel(screen, xMiddle +sin(x + i / 2000)*100, yMiddle + cos(x+i/1000) * 100,myColors.red);
+        DrawPixel(screen, xMiddle + sin(x + i / 2000) * 100 - cos(x + i / 1000) * 100, yMiddle - cos(x + i / 1000) * 100, myColors.green);
+        DrawPixel(screen, xMiddle - cos(x + i / 1000) * 100, yMiddle + sin(x + i / 2000) * 100 - cos(x + i / 1000) * 100, myColors.blue);
+    }
+}
 
 void WindowHandler::GetColors(SDL_Surface* screen)
 {

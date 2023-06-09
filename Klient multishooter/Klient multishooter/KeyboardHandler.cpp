@@ -1,7 +1,7 @@
 #include "KeyboardHandler.h"
 #include"./SDL2-2.0.10/include/SDL.h"
 #include "StructStorage.h"
-void KeyboardHandler::EventHandler(SDL_Event event, Player* P1, SOCKET server_socket, bool* gameState,int playerID)
+void KeyboardHandler::EventGameHandler(SDL_Event event, Player* P1, SOCKET server_socket, bool* gameState,int playerID)
 {
     char buf[80];
     buf[0] = '0';
@@ -40,4 +40,28 @@ void KeyboardHandler::EventHandler(SDL_Event event, Player* P1, SOCKET server_so
         buff_length = 3;
         send(server_socket, buf, buff_length, 0);
     }
+}
+
+char KeyboardHandler::InputAdress(SDL_Event event, bool* pressedEnter)
+{
+    switch (event.type)
+    {
+    case SDL_KEYDOWN:
+        int value = event.key.keysym.sym;
+        if (event.key.keysym.sym == SDLK_RETURN)
+        {
+            *pressedEnter = true;
+        }
+        else if((SDLK_a <= event.key.keysym.sym && event.key.keysym.sym <= SDLK_z) || 
+            (SDLK_0 <=event.key.keysym.sym&& event.key.keysym.sym <= SDLK_9)|| event.key.keysym.sym == SDLK_PERIOD)
+        {
+            return event.key.keysym.sym;
+        }
+        else if (event.key.keysym.sym == SDLK_BACKSPACE)
+        {
+            return SDLK_BACKSPACE;
+        }
+        break;
+    }
+    return NULL;
 }
