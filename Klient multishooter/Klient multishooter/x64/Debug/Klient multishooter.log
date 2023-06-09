@@ -1,11 +1,1 @@
-﻿  Klient multishooter.cpp
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(223,60): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(223,46): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(228,52): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(228,42): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(231,37): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(231,30): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(304,16): warning C4129: ' ': unrecognized character escape sequence
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(307,24): warning C4101: 'threadID2': unreferenced local variable
-C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\Klient multishooter\Klient multishooter.cpp(118): warning C4715: 'ReciverFromServer': not all control paths return a value
-  Klient multishooter.vcxproj -> C:\Users\Acer\Desktop\MULTIPLAYER GAME\Klient multishooter\x64\Debug\Klient multishooter.exe
+﻿  Klient multishooter.vcxproj -> C:\Users\chudy\Documents\The_Multi_Player_Game\Klient multishooter\x64\Debug\Klient multishooter.exe
