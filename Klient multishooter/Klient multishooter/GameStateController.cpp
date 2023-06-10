@@ -72,7 +72,7 @@ void GameStateController::FirstLevel(Player* P1, std::map<int, Player*>* enemies
     bool gamestate = true;
     while (gamestate)
     {
-        if (ticks2 - ticks > 16.6)//co oko³o 1 milisekundy 60fps
+        if (ticks2 - ticks > 16.6)//60fps
         {
             this->BulletPropagator(bullets);
             DeadEnemiesRemover(enemies);

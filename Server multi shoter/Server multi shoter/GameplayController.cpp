@@ -204,7 +204,7 @@ void GameplayController::GameStatePropagator(std::list<Bullets>* newBullets)
     {
         if ((double)(clock() - t) / CLOCKS_PER_SEC > 0.02)
         {
-
+            this->myConnectionH->CheckConnections(this->players);
             PlayerSorter(&allivePlayers);
             InvinsibleFrmesPropagator(&allivePlayers);
 

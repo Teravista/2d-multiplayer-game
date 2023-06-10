@@ -13,6 +13,8 @@ public:
 	void AcceptNewClient(std::list<Bullets>* newBullets);
 	void SendToClient(SOCKET socket, char* buf, int buff_length);
 	void SendToAllClients(std::map<SOCKET, Player*>* players, char* buf, int buff_length);
+	void DeletePlayer(SOCKET socketOfDeleted);
+	void CheckConnections(std::map<SOCKET, Player*>* connectedCleints);
 	void SendToAllClientsButOne(std::map<SOCKET, Player*>* players,SOCKET dontSend, char* buf, int buff_length);
 	int socketCounter = 0;
 private:

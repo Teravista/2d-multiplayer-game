@@ -1,2 +1,12 @@
 ﻿  ConnectionHandler.cpp
+C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\Server multi shoter\ConnectionHandler.cpp(128,14): warning C4244: '=': conversion from 'SOCKET' to 'char', possible loss of data
+  GameplayController.cpp
+C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\Server multi shoter\GameplayController.cpp(182,22): warning C4244: '=': conversion from '_Ty1' to 'char', possible loss of data
+          with
+          [
+              _Ty1=const SOCKET
+          ]
+C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\Server multi shoter\GameplayController.cpp(201,9): warning C4101: 'buff_length': unreferenced local variable
+  Server multi shoter.cpp
+  Generating Code...
   Server multi shoter.vcxproj -> C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\x64\Debug\Server multi shoter.exe

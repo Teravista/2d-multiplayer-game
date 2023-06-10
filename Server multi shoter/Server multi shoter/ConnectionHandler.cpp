@@ -121,6 +121,36 @@ void ConnectionHandler::AcceptNewClient(std::list<Bullets>* newBullets)
     th1.detach();
 }
 
+void ConnectionHandler::DeletePlayer(SOCKET socketOfDeleted)
+{
+    char buf[12];
+    buf[0] = buf[1] = 'E';
+    buf[2] = socketOfDeleted;
+    buf[9] = 0;
+    SendToAllClients(this->players,buf,12);
+}
+
+void ConnectionHandler::CheckConnections(std::map<SOCKET, Player*>* connectedCleints)//remove any data connected to disconnected cleints
+{
+    std::map<SOCKET, Player*>::iterator iterator = connectedCleints->begin();
+    std::map<SOCKET, Player*>::iterator iteratorEnd = connectedCleints->end();
+    char testText[2]; testText[0] = 'Z'; testText[1] = 'Z';
+    while (iterator != iteratorEnd)
+    {
+        int nSendBytes = send(iterator->first, testText, 2, 0);
+        if (nSendBytes == SOCKET_ERROR)
+        {
+            SOCKET socket = iterator->first;
+             closesocket(socket);
+             delete(iterator->second);
+             iterator = connectedCleints->erase(iterator);
+             DeletePlayer(socket);
+        }
+        else
+            ++iterator;
+    }
+}
+
 void ConnectionHandler::ServerShutdown()
 {
     closesocket(serverSocket);
