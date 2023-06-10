@@ -1,9 +1,2 @@
 ﻿  ConnectionHandler.cpp
-C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\Server multi shoter\StructStorage.h(10,10): warning C4305: 'initializing': truncation from 'int' to 'bool'
-  GameplayController.cpp
-C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\Server multi shoter\StructStorage.h(10,10): warning C4305: 'initializing': truncation from 'int' to 'bool'
-C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\Server multi shoter\GameplayController.cpp(39,9): warning C4101: 'buff_length': unreferenced local variable
-  Server multi shoter.cpp
-C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\Server multi shoter\StructStorage.h(10,10): warning C4305: 'initializing': truncation from 'int' to 'bool'
-  Generating Code...
   Server multi shoter.vcxproj -> C:\Users\chudy\Documents\2d-multiplayer-game\Server multi shoter\x64\Debug\Server multi shoter.exe

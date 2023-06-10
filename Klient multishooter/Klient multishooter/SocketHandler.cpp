@@ -12,7 +12,7 @@ SocketHandler::SocketHandler(std::mutex* bulletMtx)
 }
 
 
-void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerID, std::list<Bullets>* bullets)
+void SocketHandler::ReciverFromServer( Player* P1, std::map<int, Player*>* enemies, std::list<Bullets>* bullets)
 {
     char buf[100];
     printf("got in\n");
@@ -35,7 +35,8 @@ void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerI
             y += buf[8];
             P1->x = x;
             P1->y = y;
-            *playerID = buf[2];
+            P1->lifes = buf[9];
+            P1->invincebleFrames = buf[10];
         }
         else if (buf[0] == 'B' && buf[1] == 'B')
         {
@@ -56,24 +57,28 @@ void SocketHandler::ReciverFromServer( Player* P1, Player* enemies, int* playerI
         }
         else if (buf[0] == 'E' && buf[1] == 'E')
         {
+
             int sock = buf[2];
+            Player* newPlayer;
+            if (enemies->find(sock) != enemies->end()) {
+                auto iterator = enemies->find(sock);
+                newPlayer = iterator->second;
+            }
+            else
+            {
+                newPlayer = new Player;
+                enemies->insert({ sock,newPlayer });
+            }
             x = buf[3] * 100;
             x += buf[4] * 10;
             x += buf[5];
             y = buf[6] * 100;
             y += buf[7] * 10;
             y += buf[8];
-            enemies[sock].lifes = 3;
-            enemies[sock].x = x;
-            enemies[sock].y = y;
-        }
-        else if (buf[0] == 'H' && buf[1] == 'H')
-        {
-            if (buf[2])P1->wasHit = true;
-        }
-        else if (buf[0] == 'C' && buf[1] == 'C')
-        {
-            if (buf[2])P1->wasHit = true;
+            newPlayer->lifes = buf[9];
+            newPlayer->invincebleFrames = buf[10];
+            newPlayer->x = x;
+            newPlayer->y = y;
         }
     };
 }
@@ -98,6 +103,11 @@ int SocketHandler::SocketInitializer(std::string serverIP)
         return -1;
     }
     return 1;
+}
+
+void SocketHandler::SendMessageToServer(char* message, int messageLength)
+{
+    send(this->server_socket, message, messageLength, 0);
 }
 
 void SocketHandler::SocketClose()

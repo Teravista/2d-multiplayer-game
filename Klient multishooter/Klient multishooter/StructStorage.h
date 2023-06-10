@@ -14,8 +14,8 @@ struct Player
     double xSpeed = 0;
     double xShootSpeed = 0;
     double yShootSpeed = 0;
-    int lifes = 3;
-    bool wasHit = false;
+    int lifes = 0;
+    int invincebleFrames = 0;
 };
 
 struct Bullets

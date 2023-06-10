@@ -1,8 +1,14 @@
 #include "KeyboardHandler.h"
 #include"./SDL2-2.0.10/include/SDL.h"
 #include "StructStorage.h"
-void KeyboardHandler::EventGameHandler(SDL_Event event, Player* P1, SOCKET server_socket, bool* gameState,int playerID)
+
+KeyboardHandler::KeyboardHandler(SocketHandler* socketHandler)
 {
+    this->socketHandler = socketHandler;
+}
+void KeyboardHandler::EventGameHandler(SDL_Event event, Player* P1, SOCKET server_socket, bool* gameState)
+{
+
     char buf[80];
     buf[0] = '0';
     int buff_length;
@@ -33,12 +39,12 @@ void KeyboardHandler::EventGameHandler(SDL_Event event, Player* P1, SOCKET serve
         *gameState = false;
         break;
     }
-    if (buf[0] != '0')
+    if (buf[0] != '0' && P1->lifes > 0) // its unecessery to send data to server while your dead
     {
-        buf[1] = playerID;
+        buf[1] = ' ';
         buf[2] = '\0';
         buff_length = 3;
-        send(server_socket, buf, buff_length, 0);
+        this->socketHandler->SendMessageToServer(buf,buff_length);
     }
 }
 
@@ -48,6 +54,7 @@ char KeyboardHandler::InputAdress(SDL_Event event, bool* pressedEnter)
     {
     case SDL_KEYDOWN:
         int value = event.key.keysym.sym;
+        if (event.key.keysym.sym == SDLK_ESCAPE) return SDLK_ESCAPE;
         if (event.key.keysym.sym == SDLK_RETURN)
         {
             *pressedEnter = true;

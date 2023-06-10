@@ -3,12 +3,13 @@
 #include <string>
 #include"./SDL2-2.0.10/include/SDL.h"
 #include <mutex>
+#include <map>
 class WindowHandler
 {
 public:
 	WindowHandler(std::mutex* bulletMtx);
 	int SDL_Initialize();
-	void TexturesUpdateLVL1(struct Player* P1,struct Player* enemies, std::list<struct Bullets> bullets);
+	void TexturesUpdateLVL1(struct Player* P1, std::map<int, Player*>* enemies, std::list<struct Bullets> bullets);
 	void TexturesUpdateLoadScreen(std::string input,int clockTicks);
 	void FreeSurfaces();
 private:
@@ -25,7 +26,7 @@ private:
 	void DrawRectangle(SDL_Surface* screen, int x, int y, int l, int k,Uint32 outlineColor, Uint32 fillColor);
 	void DrawString(SDL_Surface* screen, double x, double y, std::string text, SDL_Surface* charset);
 	void DrawLifes(Player* P1);
-	void DrawEntities(Player* P1, Player* enemies, std::list<struct Bullets> bullets);
+	void DrawEntities(Player* P1, std::map<int, Player*>* enemies, std::list<struct Bullets> bullets);
 	void DrawSpinningLogo(double i);
 	void RefreshWindow();
 	void GetColors(SDL_Surface* screen);
