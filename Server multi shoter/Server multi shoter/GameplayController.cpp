@@ -134,7 +134,7 @@ void GameplayController::SendPlayerPositionToClients(std::map<SOCKET, Player*>* 
     {
         Player* player = iter->second;
         buf[0] = buf[1] = 'P';
-        buf[2] = 1;//watch for later removed here socket counter 
+        buf[2] = 1;//to remove
         buf[3] = int(player->x / 100);
         buf[4] = int(player->x / 10) % 10;
         buf[5] = (int(player->x) % 100) % 10;
