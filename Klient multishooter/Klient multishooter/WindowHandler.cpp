@@ -3,6 +3,7 @@
 #include "KeyboardHandler.h"
 #include"./SDL2-2.0.10/include/SDL.h"
 #include <list>
+#include <map>
 
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 600
@@ -125,16 +126,28 @@ void WindowHandler::DrawRectangle(SDL_Surface* screen, int x, int y, int l, int 
         DrawLine(screen, x + 1, i, l - 2, 1, 0, fillColor);
 };
 
-void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets> bullets)//TODO optimazations kinda junky
+void WindowHandler::DrawLifes(Player* P1)
+{
+    for (int i = 0; i < P1->lifes; i++)
+    {
+        DrawRectangle(screen, SCREEN_WIDTH - 40 - i * 50, 40, 10, 10, myColors.red, myColors.red);
+        DrawRectangle(screen, SCREEN_WIDTH - 50 - i * 50, 50, 10, 10, myColors.red, myColors.red);
+        DrawRectangle(screen, SCREEN_WIDTH - 60 - i * 50, 40, 10, 10, myColors.red, myColors.red);
+    }
+}
+
+void WindowHandler::DrawEntities(Player* P1, std::map<int, Player*>* enemies, std::list<Bullets> bullets)//TODO optimazations kinda junky
 {
     // drawing player enemies and bullets
     //
-    for (int i = 0; i < 10; i++)
+    std::map<int, Player*>::iterator iter;
+    Player* enemy = NULL;
+    int playerColor=myColors.red;
+    for (iter = enemies->begin(); iter != enemies->end(); iter++)
     {
-        if (enemies[i].allive == true)
-        {
-            DrawRectangle(screen, enemies[i].x, enemies[i].y, 20, 20, myColors.blue, myColors.red);
-        }
+        enemy = iter->second;
+        playerColor = (enemy->invincebleFrames > 0) ? myColors.green : myColors.red;
+        DrawRectangle(screen, enemy->x, enemy->y, 20, 20, myColors.blue, playerColor);
     }
     this->bulletMtx->lock();
     for (const Bullets& bullet : bullets)
@@ -142,14 +155,15 @@ void WindowHandler::DrawEntities(Player* P1, Player* enemies, std::list<Bullets>
         DrawRectangle(screen, bullet.x, bullet.y, 5, 5, myColors.green, myColors.red);
     }
     this->bulletMtx->unlock();
-    int playerColor = (P1->wasHit) ? myColors.green : myColors.blue;
+    playerColor = (P1->invincebleFrames>0) ? myColors.green : myColors.blue;
     DrawRectangle(screen, P1->x, P1->y, 20, 20, myColors.red, playerColor);
 };
 
-void WindowHandler::TexturesUpdateLVL1(Player* P1, Player* enemies, std::list<Bullets> bullets)
+void WindowHandler::TexturesUpdateLVL1(Player* P1, std::map<int, Player*>* enemies, std::list<Bullets> bullets)
 {
     SDL_FillRect(screen, NULL, myColors.black);
     DrawEntities(P1, enemies, bullets);
+    DrawLifes(P1);
     this->RefreshWindow();
 }
 

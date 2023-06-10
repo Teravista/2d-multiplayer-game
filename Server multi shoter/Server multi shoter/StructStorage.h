@@ -1,20 +1,20 @@
 #pragma once
 struct Player
 {
-    double x = 200;
-    double y = 200;
-    double ySpeed = 0;
-    double xSpeed = 0;
-    double xShootSpeed = 0;
-    double yShootSpeed = 0;
-    bool allive = false;
-    bool wasHit = false;
+    int x = 200;
+    int y = 200;
+    int ySpeed = 0;
+    int xSpeed = 0;
+    int xShootSpeed = 0;
+    int yShootSpeed = 0;
+    int lifes = 3;
+    int invincebleFrames = 0;
 };
 
 struct Bullets
 {
-    double x = 0;
-    double y = 0;
-    double xSpeed = 0;
-    double ySpeed = 0;
+    int x = 0;
+    int y = 0;
+    int xSpeed = 0;
+    int ySpeed = 0;
 };

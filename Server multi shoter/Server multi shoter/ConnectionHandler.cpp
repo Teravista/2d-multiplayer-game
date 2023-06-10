@@ -3,9 +3,11 @@
 #include <winsock.h>
 #include <thread>
 #include <list>
+#include <map>
 
-ConnectionHandler::ConnectionHandler(std::mutex* bulletMtx)
+ConnectionHandler::ConnectionHandler(std::mutex* bulletMtx, std::map<SOCKET, Player*>* players)
 {
+    this->players = players;
     this->bulletMtx = bulletMtx;
 }
 
@@ -41,61 +43,81 @@ int ConnectionHandler::ServerInitialize()
     return 1;
 }
 
-void ConnectionHandler::ClientMessageReciver(SOCKET si, Player* P, std::list<Bullets>* newBullets)
+void ConnectionHandler::ClientMessageReciver(SOCKET si, Player* player, std::list<Bullets>* newBullets)
 {
     char buf[100];
     int cur_player = socketCounter - 1;
     while (recv(si, buf, 100, 0) > 0)
     {
-        if (buf[0] == 'L')
-            P[cur_player].xSpeed = -1;
-        if (buf[0] == 'R')
-            P[cur_player].xSpeed = 1;
-        if (buf[0] == 'U')
-            P[cur_player].ySpeed = -1;
-        if (buf[0] == 'N')
-            P[cur_player].ySpeed = +1;
-        if (buf[0] == 'Y')
-            P[cur_player].ySpeed = 0;
-        if (buf[0] == 'X')
-            P[cur_player].xSpeed = 0;
-        if (buf[0] == 'W' || buf[0] == 'A' || buf[0] == 'S' || buf[0] == 'D')
-        {
-            Bullets bullet;
-            bullet.x = P[cur_player].x;
-            bullet.y = P[cur_player].y;
-            if (buf[0] == 'W')
-                bullet.ySpeed = -1;
-            if (buf[0] == 'S')
-                bullet.ySpeed = 1;
-            if (buf[0] == 'A')
-                bullet.xSpeed = -1;
-            if (buf[0] == 'D')
-                bullet.xSpeed = +1;
-            bullet.x += bullet.xSpeed * 30;
-            bullet.y += bullet.ySpeed * 30;
-            this->bulletMtx->lock();
-            newBullets->push_back(bullet);
-            this->bulletMtx->unlock();
+        if (player->lifes > 0) {
+            if (buf[0] == 'L')
+                player->xSpeed = -1;
+            if (buf[0] == 'R')
+                player->xSpeed = 1;
+            if (buf[0] == 'U')
+                player->ySpeed = -1;
+            if (buf[0] == 'N')
+                player->ySpeed = +1;
+            if (buf[0] == 'Y')
+                player->ySpeed = 0;
+            if (buf[0] == 'X')
+                player->xSpeed = 0;
+            if (buf[0] == 'W' || buf[0] == 'A' || buf[0] == 'S' || buf[0] == 'D')
+            {
+                Bullets bullet;
+                bullet.x = player->x;
+                bullet.y = player->y;
+                if (buf[0] == 'W')
+                    bullet.ySpeed = -1;
+                if (buf[0] == 'S')
+                    bullet.ySpeed = 1;
+                if (buf[0] == 'A')
+                    bullet.xSpeed = -1;
+                if (buf[0] == 'D')
+                    bullet.xSpeed = +1;
+                bullet.x += bullet.xSpeed * 30;
+                bullet.y += bullet.ySpeed * 30;
+                this->bulletMtx->lock();
+                newBullets->push_back(bullet);
+                this->bulletMtx->unlock();
+            }
         }
     };
 }
 
-void ConnectionHandler::SendToClient(int ithSocket, char* buf, int buff_length)
+void ConnectionHandler::SendToClient(SOCKET socket, char* buf, int buff_length)
 {
-    send(socketos[ithSocket], buf, buff_length, 0);
+    send(socket, buf, buff_length, 0);
 }
 
-void ConnectionHandler::AcceptNewClient(Player* players, std::list<Bullets>* newBullets)
+void ConnectionHandler::SendToAllClients(std::map<SOCKET, Player*>* players, char* buf, int buff_length)
+{
+    std::map<SOCKET, Player*>::iterator iter;
+    for (iter = players->begin(); iter != players->end(); iter++)
+    {
+        SendToClient(iter->first, buf, buff_length);
+    }
+}
+void ConnectionHandler::SendToAllClientsButOne(std::map<SOCKET, Player*>* players, SOCKET dontSend, char* buf, int buff_length)
+{
+    std::map<SOCKET, Player*>::iterator iter;
+    for (iter = players->begin(); iter != players->end(); iter++)
+    {
+        if(iter->first != dontSend)
+            SendToClient(iter->first, buf, buff_length);
+    }
+}
+
+void ConnectionHandler::AcceptNewClient(std::list<Bullets>* newBullets)
 {
     SOCKET cleintSocket;
     struct sockaddr_in sc;
     int lenc = sizeof(sc);
     cleintSocket = accept(serverSocket, (SOCKADDR*)&sc, &lenc);
-    socketos[socketCounter] = cleintSocket;
-    socketCounter++;
+    Player* newPlayer = new Player();
     printf("Client Connected: %i\n", socketCounter);
-    std::thread th1(&ConnectionHandler::ClientMessageReciver,this, cleintSocket, players, newBullets);
+    this->players->insert({ cleintSocket, newPlayer });
+    std::thread th1(&ConnectionHandler::ClientMessageReciver,this, cleintSocket, newPlayer, newBullets);
     th1.detach();
 }
 

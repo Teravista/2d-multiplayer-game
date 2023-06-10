@@ -1,6 +1,7 @@
 #include "GameStateController.h"
 #include"./SDL2-2.0.10/include/SDL.h"
 #include "StructStorage.h"
+#include <map>
 
 GameStateController::GameStateController(KeyboardHandler* keyboardHandler, WindowHandler* windowHandler, SocketHandler* socketHandler, std::mutex* bulletMtx)
 {
@@ -31,13 +32,16 @@ std::string GameStateController::GameLoadScreen()
         while (SDL_PollEvent(&event))
         {
             char keyRead = keyboardHandler->InputAdress(event, &pressedEnter);
-
-            if(keyRead == SDLK_BACKSPACE&&input.length()>0)
+            
+            if (keyRead == SDLK_ESCAPE)
+                 return "END";
+            else if (keyRead == SDLK_BACKSPACE && input.length() > 0)
                 input.pop_back();
-            else if (keyRead != NULL&& keyRead != SDLK_BACKSPACE)
+            else if (keyRead != NULL && keyRead != SDLK_BACKSPACE)
             {
                 input.push_back(keyRead);
             }
+           
         }
     }
     if (input.compare("local") == 0)
@@ -47,7 +51,20 @@ std::string GameStateController::GameLoadScreen()
     return std::string(input);
 }
 
-void GameStateController::FirstLevel(Player* P1,Player* enemies, std::list<Bullets>* bullets,int PlayerId)
+void GameStateController::DeadEnemiesRemover(std::map<int, Player*>* enemies)
+{
+    std::map<int, Player*>::iterator iter = enemies->begin();
+    std::map<int, Player*>::iterator iterEnd = enemies->end();
+    while (iter != iterEnd)
+    {
+        if (iter->second->lifes <= 0)
+            iter = enemies->erase(iter);
+        else
+            ++iter;
+    }
+}
+
+void GameStateController::FirstLevel(Player* P1, std::map<int, Player*>* enemies, std::list<Bullets>* bullets)
 {
     SDL_Event event;
     double ticks = SDL_GetTicks();
@@ -58,8 +75,8 @@ void GameStateController::FirstLevel(Player* P1,Player* enemies, std::list<Bulle
         if (ticks2 - ticks > 16.6)//co oko³o 1 milisekundy 60fps
         {
             this->BulletPropagator(bullets);
+            DeadEnemiesRemover(enemies);
             windowHandler->TexturesUpdateLVL1(P1, enemies, *bullets);
-            P1->wasHit = false;
             ticks = ticks2 = SDL_GetTicks();
         }
         else
@@ -68,7 +85,7 @@ void GameStateController::FirstLevel(Player* P1,Player* enemies, std::list<Bulle
         }
         while (SDL_PollEvent(&event))
         {
-            keyboardHandler->EventGameHandler(event, P1, socketHandler->server_socket, &gamestate, PlayerId);
+            keyboardHandler->EventGameHandler(event, P1, socketHandler->server_socket, &gamestate);
         }
     }
 }
