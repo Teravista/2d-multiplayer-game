@@ -14,30 +14,36 @@ ConnectionHandler::ConnectionHandler(std::mutex* bulletMtx, std::map<SOCKET, Pla
 int ConnectionHandler::ServerInitialize()
 {
     WSADATA wsas;
-    int result = WSAStartup(MAKEWORD(1, 1), &wsas);
+    int result = WSAStartup(MAKEWORD(2, 2), &wsas);
     if (result != 0)
     {
         printf("WSA failed to initialied");
         return -1;
     }
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    serverSocketTCP = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    serverSocketUDP = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-    struct sockaddr_in socketAddr;
-    memset((void*)(&socketAddr), 0, sizeof(socketAddr));
-    socketAddr.sin_family = AF_INET;
-    socketAddr.sin_port = htons(8888);
-    socketAddr.sin_addr.s_addr = INADDR_ANY;
+    struct sockaddr_in socketAddrTCP;
+    memset((void*)(&socketAddrTCP), 0, sizeof(socketAddrTCP));
+    socketAddrTCP.sin_family = AF_INET;
+    socketAddrTCP.sin_port = htons(8888);
+    socketAddrTCP.sin_addr.s_addr = INADDR_ANY;
 
-    result = bind(serverSocket, (struct sockaddr FAR*) & socketAddr, sizeof(socketAddr));
+    
+
+    result = bind(serverSocketTCP, (struct sockaddr FAR*) & socketAddrTCP, sizeof(socketAddrTCP));
     if (result != 0)
     {
-        printf("Server socket failed to initialize");
+        printf("Server socket TCP failed to initialize");
         return -1;
     }
-    result = listen(serverSocket, 20);
+
+    
+
+    result = listen(serverSocketTCP, 20);
     if (result != 0)
     {
-        printf("Couldnt modify listeting size");
+        printf("Couldnt modify TCP listeting size");
         return -1;
     }
     return 1;
@@ -98,13 +104,28 @@ void ConnectionHandler::SendToAllClients(std::map<SOCKET, Player*>* players, cha
         SendToClient(iter->first, buf, buff_length);
     }
 }
-void ConnectionHandler::SendToAllClientsButOne(std::map<SOCKET, Player*>* players, SOCKET dontSend, char* buf, int buff_length)
+void ConnectionHandler::SendToAllClientsButOneUDP(std::map<SOCKET, Player*>* players, SOCKET dontSend, char* buf, int buff_length)
 {
     std::map<SOCKET, Player*>::iterator iter;
+
+ 
+
     for (iter = players->begin(); iter != players->end(); iter++)
     {
-        if(iter->first != dontSend)
-            SendToClient(iter->first, buf, buff_length);
+        if (iter->first != dontSend)    
+        {
+            struct sockaddr_in* pV4Addr = (struct sockaddr_in*)&iter->first;
+            std::string s = inet_ntoa(pV4Addr->sin_addr);
+            struct sockaddr_in socketAddrUDP;
+            socketAddrUDP.sin_family = AF_INET;
+            socketAddrUDP.sin_port = htons(9999);
+            socketAddrUDP.sin_addr.s_addr = inet_addr("127.0.0.1");
+            int iResult = sendto(serverSocketUDP,
+                buf, buff_length, 0, (SOCKADDR*)&socketAddrUDP, sizeof(socketAddrUDP));
+            if (iResult == SOCKET_ERROR) {
+                printf("Sending back response got an error: %d\n", WSAGetLastError());
+            }
+        }
     }
 }
 
@@ -113,7 +134,9 @@ void ConnectionHandler::AcceptNewClient(std::list<Bullets>* newBullets)
     SOCKET cleintSocket;
     struct sockaddr_in sc;
     int lenc = sizeof(sc);
-    cleintSocket = accept(serverSocket, (SOCKADDR*)&sc, &lenc);
+    cleintSocket = accept(serverSocketTCP, (SOCKADDR*)&sc, &lenc);
+
+
     Player* newPlayer = new Player();
     printf("Client Connected: %i\n", socketCounter);
     this->players->insert({ cleintSocket, newPlayer });
@@ -153,6 +176,6 @@ void ConnectionHandler::CheckConnections(std::map<SOCKET, Player*>* connectedCle
 
 void ConnectionHandler::ServerShutdown()
 {
-    closesocket(serverSocket);
+    closesocket(serverSocketTCP);
     WSACleanup();
 }

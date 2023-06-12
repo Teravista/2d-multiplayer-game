@@ -10,9 +10,60 @@ SocketHandler::SocketHandler(std::mutex* bulletMtx)
 {
     this->bulletMtx = bulletMtx;
 }
+void SocketHandler::ReviferFromServerUDP(std::map<int, Player*>* enemies)
+{
+    SOCKET UDPsocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    struct sockaddr_in RecvAddr;
+    memset((void*)(&RecvAddr), 0, sizeof(RecvAddr));
+    RecvAddr.sin_family = AF_INET;
+    RecvAddr.sin_port = htons(9999);
+    RecvAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    int iResult = bind(UDPsocket, (SOCKADDR*)&RecvAddr, sizeof(RecvAddr));
+    if (iResult != 0) {
+        wprintf(L"bind failed with error %d\n", WSAGetLastError());
+        return;
+    }
+    struct sockaddr_in SenderAddr;
+    int SenderAddrSize = sizeof(SenderAddr);
 
 
-void SocketHandler::ReciverFromServer( Player* P1, std::map<int, Player*>* enemies, std::list<Bullets>* bullets)
+    char buf[15];
+    int bytesrev;
+    while (bytesrev=recvfrom(UDPsocket, buf, 12, 0 /* no flags*/, (SOCKADDR*)&SenderAddr, &SenderAddrSize)) {
+        int val;
+        if (bytesrev == SOCKET_ERROR) {
+            val = WSAGetLastError();
+        }
+       int x = 0;
+        int y = 0;
+        if (buf[0] == 'E' && buf[1] == 'E')
+        {
+             int sock = buf[2];
+             Player* newPlayer;
+             if (enemies->find(sock) != enemies->end()) {
+                 auto iterator = enemies->find(sock);
+                 newPlayer = iterator->second;
+             }
+             else
+             {
+                 newPlayer = new Player;
+                 enemies->insert({ sock,newPlayer });
+             }
+             x = buf[3] * 100;
+             x += buf[4] * 10;
+             x += buf[5];
+             y = buf[6] * 100;
+             y += buf[7] * 10;
+             y += buf[8];
+             newPlayer->lifes = buf[9];
+             newPlayer->invincebleFrames = buf[10];
+             newPlayer->x = x;
+             newPlayer->y = y;
+            }
+    }
+}
+
+void SocketHandler::ReciverFromServerTCP( Player* P1, std::list<Bullets>* bullets)
 {
     char buf[100];
     printf("got in\n");
@@ -55,31 +106,7 @@ void SocketHandler::ReciverFromServer( Player* P1, std::map<int, Player*>* enemi
             bullets->push_back(bullet);
             this->bulletMtx->unlock();
         }
-        else if (buf[0] == 'E' && buf[1] == 'E')
-        {
-
-            int sock = buf[2];
-            Player* newPlayer;
-            if (enemies->find(sock) != enemies->end()) {
-                auto iterator = enemies->find(sock);
-                newPlayer = iterator->second;
-            }
-            else
-            {
-                newPlayer = new Player;
-                enemies->insert({ sock,newPlayer });
-            }
-            x = buf[3] * 100;
-            x += buf[4] * 10;
-            x += buf[5];
-            y = buf[6] * 100;
-            y += buf[7] * 10;
-            y += buf[8];
-            newPlayer->lifes = buf[9];
-            newPlayer->invincebleFrames = buf[10];
-            newPlayer->x = x;
-            newPlayer->y = y;
-        }
+       
     };
 }
 
@@ -95,6 +122,7 @@ int SocketHandler::SocketInitializer(std::string serverIP)
     sa.sin_family = AF_INET;
     sa.sin_port = htons(8888);
     sa.sin_addr.s_addr = inet_addr(serverIP.c_str());
+    this->serverIP = serverIP;
     
     int result = connect(server_socket, (struct sockaddr FAR*) & sa, sizeof(sa));
     if (result == SOCKET_ERROR)

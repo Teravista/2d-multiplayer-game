@@ -18,9 +18,11 @@
 //3.improve movement handler seems junky and everything in keyboardHandler
 //4.change method of comunication with server to bits : be smart use less data
 // add smart pointers
+// add graphics for player enemies bullets and some background
+// some more gameplay mechanics like moving background bigger playspace than only screen some obstacles
+// adding some basic level constructor
 // CONNECTION
 //5.use UDP instead of TCP for some non important data like current player location (we can skip a few frames)
-//7.implement some kind of time out mechanizm for players who disconet to automaticly dissapear from map and server list
 
 int main(int argc, char** argv) 
 {
@@ -39,11 +41,14 @@ int main(int argc, char** argv)
         serverIP = gamestateController.GameLoadScreen();
         if (serverIP.compare("END") == 0) return 0;
     } while (socketHandler.SocketInitializer(serverIP) == -1);
-    std::thread th1(&SocketHandler::ReciverFromServer, &socketHandler,&P1,&enemies,&bullets);
+    std::thread th1(&SocketHandler::ReciverFromServerTCP, &socketHandler,&P1,&bullets);
+    std::thread th2(&SocketHandler::ReviferFromServerUDP, &socketHandler, &enemies);
+
 
     gamestateController.FirstLevel(&P1,&enemies,&bullets);
 
     th1.detach();
+    th2.detach();
     windowHandler.FreeSurfaces();
     socketHandler.SocketClose();
     return 0;

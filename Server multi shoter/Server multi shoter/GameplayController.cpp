@@ -173,6 +173,8 @@ void GameplayController::BulletSender(std::list<Bullets>* newBullets,char* buf,s
 }
 
 void GameplayController::SendEnemyPositionToClients(std::map<SOCKET, Player*>* allivePlayers,char* buf)
+//here we are using UDP because we dont need to always send  enemy infomration every tick
+//we can afford to miss  a few
 {
     std::map<SOCKET, Player*>::iterator iter;
     for (iter = allivePlayers->begin(); iter != allivePlayers->end(); iter++)
@@ -189,7 +191,7 @@ void GameplayController::SendEnemyPositionToClients(std::map<SOCKET, Player*>* a
         buf[9] = player->lifes;
         buf[10] = player->invincebleFrames;
         buf[11] = '\0';
-        this->myConnectionH->SendToAllClientsButOne(this->players,iter->first, buf, 12);
+        this->myConnectionH->SendToAllClientsButOneUDP(this->players,iter->first, buf, 12);
     }
 }
 void GameplayController::GameStatePropagator(std::list<Bullets>* newBullets)

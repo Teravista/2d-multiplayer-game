@@ -15,11 +15,12 @@ public:
 	void SendToAllClients(std::map<SOCKET, Player*>* players, char* buf, int buff_length);
 	void DeletePlayer(SOCKET socketOfDeleted);
 	void CheckConnections(std::map<SOCKET, Player*>* connectedCleints);
-	void SendToAllClientsButOne(std::map<SOCKET, Player*>* players,SOCKET dontSend, char* buf, int buff_length);
+	void SendToAllClientsButOneUDP(std::map<SOCKET, Player*>* players,SOCKET dontSend, char* buf, int buff_length);
 	int socketCounter = 0;
 private:
 	std::mutex* bulletMtx;
-	SOCKET serverSocket;
+	SOCKET serverSocketTCP;
+	SOCKET serverSocketUDP;
 	std::map<SOCKET, Player*>* players;
 	void ClientMessageReciver(SOCKET si, Player* player, std::list<Bullets>* newBullets);
 };
